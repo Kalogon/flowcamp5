@@ -123,25 +123,28 @@ const parsing = async() => {
     }
     return finance;
 }
+
 parsing().then((f)=>{
     console.log("real")
     console.log(f)
-    Finance.findOne({company_name:company_name[0]},function(err,finance){
-        console.log("저장중")
-        if(err){
-            return err;
-        }
-        if(finance){
-            finance.stackFinance(f[0]);
-        }
-        else{
-            newfinance = new Finance (f[0]);
-            newfinance.save();
-        }
-    })
+    for(let i = 0; i<f.length ; i++){
+        Finance.findOne({company_name:company_name[i]},function(err,finance){
+            console.log("저장중")
+            if(err){
+                return err;
+            }
+            if(finance){
+                finance.stackFinance(f[i]);
+            }
+            else{
+                newfinance = new Finance (f[i]);
+                newfinance.save();
+            }
+        })
+    }
 })
 
-// cron.schedule('1-5 * * * *', () => {
-    
+// cron.schedule('* * * * *', () =>  {
+
 // });
 

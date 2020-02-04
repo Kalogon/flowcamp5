@@ -55,11 +55,6 @@ financeSchema.methods.stackFinance = function (finance){
     return this.save();
 }
 
-financeSchema.methods.addprice = function (p) {
-    this.price_day.push(p);
-    return this.save();
-};
-
 financeSchema.methods.saveprice = function () {
     let price_day = this.price_day;
     this.price_all.push(price_day);
