@@ -1,6 +1,7 @@
 const express = require("express");
 const passport = require("passport");
 const User = require("./models/user");
+const Finance = require("./models/finance");
 const router = express.Router();
 const fs = require('fs');
 
@@ -86,21 +87,6 @@ router.get("/logout",function(req,res){
   res.redirect("/");
 });
 
-router.get("/img1",function(req,res){
-  fs.readFile("1first-day.jpg",              //파일 읽기
-      function (err, data)
-      {
-          //http의 헤더정보를 클라이언트쪽으로 출력
-          //image/jpg : jpg 이미지 파일을 전송한다
-          //write 로 보낼 내용을 입력
-          console.log("11111")
-          res.writeHead(200, { "Content-Type": "image/jpg" });//보낼 헤더를 만듬
-          console.log(typeof(data))
-          res.end(data);  //클라이언트에게 응답을 전송한다
-
-      }
-  );
-})
 function ensureAuthenticated(req,res,next){
   if(req.isAuthenticated()){
     next();
@@ -110,20 +96,53 @@ function ensureAuthenticated(req,res,next){
   }
 }
 
+router.get("/finances",function(req,res){
+  Finance.find({},function(err,finances){
+    const f = {finances:finances};
+    res.json(f);
+  })
+})
 
-router.get("/edit",ensureAuthenticated,function(req,res){
-  res.render("edit");
-});
+router.get("/profile",function(req,res){
+  User.findOne({username:req.body.username},function(err,user){
+    const u = {user:user}
+    res.json(u);
+  })
+})
 
-//put메서드는 현재 html에서 get post만 되니까 post로 일단 구현
-router.post("/edit",ensureAuthenticated,function(req,res,next){
-  req.user.displayName = req.body.displayname;//고쳐야 할 부분입니다!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  req.user.bio = req.body.bio;//고쳐야 할 부분입니다!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  req.user.save(function(err){
-    if(err){next(err);return;}
-    req.flash("info","Profile updated!");
-    res.redirect("/edit");
-  });
-});
+
+
+// router.get("/img1",function(req,res){
+//   fs.readFile("1first-day.jpg",              //파일 읽기
+//       function (err, data)
+//       {
+//           //http의 헤더정보를 클라이언트쪽으로 출력
+//           //image/jpg : jpg 이미지 파일을 전송한다
+//           //write 로 보낼 내용을 입력
+//           console.log("11111")
+//           res.writeHead(200, { "Content-Type": "image/jpg" });//보낼 헤더를 만듬
+//           console.log(typeof(data))
+//           res.end(data);  //클라이언트에게 응답을 전송한다
+
+//       }
+//   );
+// })
+
+
+
+// router.get("/edit",ensureAuthenticated,function(req,res){
+//   res.render("edit");
+// });
+
+// //put메서드는 현재 html에서 get post만 되니까 post로 일단 구현
+// router.post("/edit",ensureAuthenticated,function(req,res,next){
+//   req.user.displayName = req.body.displayname;//고쳐야 할 부분입니다!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+//   req.user.bio = req.body.bio;//고쳐야 할 부분입니다!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+//   req.user.save(function(err){
+//     if(err){next(err);return;}
+//     req.flash("info","Profile updated!");
+//     res.redirect("/edit");
+//   });
+// });
 
 module.exports = router;
