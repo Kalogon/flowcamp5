@@ -49,7 +49,100 @@ router.post("/signup",function(req,res,next){
     }
     var newUser = new User({
       username:username,
-      password:password
+      password:password,
+      money:5000000,
+      finances:[
+        { company_name:"삼성전자",
+          amount:0
+        },
+        { company_name:"카카오",
+          amount:0
+        },
+        { company_name:"HLB",
+          amount:0
+        },
+        { company_name:"삼성SDI",
+          amount:0
+        },
+        { company_name:"남선알미늄",
+          amount:0
+        },
+        { company_name:"SK하이닉스",
+          amount:0
+        },
+        { company_name:"셀트리온",
+          amount:0
+        },
+        { company_name:"제일바이오",
+          amount:0
+        },
+        { company_name:"네이버",
+          amount:0
+        },
+        { company_name:"체시스",
+          amount:0
+        },
+        { company_name:"LG화학",
+          amount:0
+        },
+        { company_name:"젬백스",
+          amount:0
+        },
+        { company_name:"LG디스플레이",
+          amount:0
+        },
+        { company_name:"SK텔레콤",
+          amount:0
+        },
+        { company_name:"셀리버리",
+          amount:0
+        },
+        { company_name:"신라젠",
+          amount:0
+        },
+        { company_name:"알테오젠",
+          amount:0
+        },
+        { company_name:"진바이오텍",
+          amount:0
+        },
+        { company_name:"LG전자",
+          amount:0
+        },
+        { company_name:"엘비세미콘",
+          amount:0
+        },
+        { company_name:"파워로직스",
+          amount:0
+        },
+        { company_name:"NC소프트",
+          amount:0
+        },
+        { company_name:"KT&G",
+          amount:0
+        },
+        { company_name:"삼성전기",
+          amount:0
+        },
+        { company_name:"PSK",
+          amount:0
+        },  
+        { company_name:"드림텍",
+          amount:0
+        },
+        { company_name:"테스나",
+          amount:0
+        },
+        { company_name:"엠씨넥스",
+          amount:0
+        },
+        { company_name:"이크레더블",
+          amount:0
+        },
+        { company_name:"켐트로닉스",
+          amount:0
+        }
+      ]
     });
     newUser.save(next);
   });
@@ -103,7 +196,7 @@ router.get("/finances",function(req,res){
   })
 })
 
-router.get("/profile",function(req,res){
+router.get("/profile",ensureAuthenticated,function(req,res){
   User.findOne({username:req.body.username},function(err,user){
     const u = {user:user}
     res.json(u);

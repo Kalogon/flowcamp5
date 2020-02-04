@@ -7,8 +7,8 @@ var userSchema = mongoose.Schema({
   username: {type:String,required:true,unique:true},
   password: {type:String,required:true},
   createdAt:{type:Date,default:Date.now},
-  diplayName: String,
-  bio: String,
+  money: {type:Number},
+  finances: [new mongoose.Schema({company_name:String,amount:Number})]
 });
  
 
@@ -40,6 +40,27 @@ userSchema.methods.checkPassword = function(guess,done){
       done(err,isMatch);
   });
 };
+
+userSchema.methods.plusmoney = function(m){
+  this.money = this.money + m;
+  return this.save()
+}
+
+userSchema.methods.minusmoney = function(m){
+  this.money = this.money - m;
+  return this.save();
+}
+
+userSchema.methods.addFinance = function(company_name,amount){
+  const f = this.finances;
+  for (let i = 0; i<f.length ;i++){
+    if(f[i]["company_name"]==company_name){
+      this.finances[i]["amount"] = f[i]["amount"] + amount
+    }
+  }
+  return this.save();
+}
+
 
 
 var User = mongoose.model("User",userSchema);

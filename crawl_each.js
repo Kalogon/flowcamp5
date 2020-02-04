@@ -42,7 +42,7 @@ const urls = ["https://finance.naver.com/item/sise.nhn?code=005930",
             "https://finance.naver.com/item/sise.nhn?code=092130",
             "https://finance.naver.com/item/sise.nhn?code=089010"]
 
-let finance = new Array();
+
 
 
 
@@ -61,7 +61,8 @@ const getHtml = async(url_c) => {
 }
 
 const parsing = async() => {
-
+    let finance = new Array();
+    
     for(let j = 0;j<urls.length;j++){
 
         await getHtml(urls[j]).then((html)=>{
@@ -134,6 +135,7 @@ cron.schedule('* * * * *', () =>  {
                 if(err){
                     return err;
                 }
+                console.log(finance)
                 if(finance){
                     finance.stackFinance(f[i]);
                 }
