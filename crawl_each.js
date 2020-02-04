@@ -124,27 +124,27 @@ const parsing = async() => {
     return finance;
 }
 
-parsing().then((f)=>{
-    console.log("real")
-    console.log(f)
-    for(let i = 0; i<f.length ; i++){
-        Finance.findOne({company_name:company_name[i]},function(err,finance){
-            console.log("저장중")
-            if(err){
-                return err;
-            }
-            if(finance){
-                finance.stackFinance(f[i]);
-            }
-            else{
-                newfinance = new Finance (f[i]);
-                newfinance.save();
-            }
-        })
-    }
-})
+cron.schedule('* * * * *', () =>  {
+    parsing().then((f)=>{
+        console.log("real")
+        console.log(f)
+        for(let i = 0; i<f.length ; i++){
+            Finance.findOne({company_name:company_name[i]},function(err,finance){
+                console.log("저장중")
+                if(err){
+                    return err;
+                }
+                if(finance){
+                    finance.stackFinance(f[i]);
+                }
+                else{
+                    newfinance = new Finance (f[i]);
+                    newfinance.save();
+                }
+            })
+        }
+    })
+});
 
-// cron.schedule('* * * * *', () =>  {
 
-// });
 

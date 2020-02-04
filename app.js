@@ -31,6 +31,6 @@ app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(route);
-app.listen(80,function(){
-  console.log("Server running at port 80");
+app.listen(3000,function(){
+  console.log("Server running at port 3000");
 });
