@@ -189,20 +189,44 @@ function ensureAuthenticated(req,res,next){
   }
 }
 
-router.get("/finances",function(req,res){
+router.get("/finances",ensureAuthenticated,function(req,res){
   Finance.find({},function(err,finances){
     const f = {finances:finances};
     res.json(f);
   })
 })
 
-router.get("/profile",ensureAuthenticated,function(req,res){
+router.get("/finance",ensureAuthenticated,function(req,res){
+  Finance.find({company_name:req.body.company_name},function(err,finance){
+    const f = {finance:finance};
+    res.json(f);
+  })
+})
+
+router.get("/buy",function(req,res){
+  Finance.findOne({company_name:req.body.company_name},function(err,finance){
+    const arr = finance["market_price"]
+    const temp = arr[arr.length-1].replace(",","")
+    // console.log(temp)
+    // console.log(Number(temp))
+    // console.log(Number(req.body.amount))
+    const money = Number(temp)*Number(req.body.amount);
+    // console.log(money)
+    // console.log(typeof(money))
+    User.findOne({username:req.body.username},function(err,user){
+      // console.log(user)
+      user.buyFinance(money, req.body.company_name,req.body.amount);
+    })
+    res.json();
+  })
+})
+
+router.get("/profile",function(req,res){
   User.findOne({username:req.body.username},function(err,user){
     const u = {user:user}
     res.json(u);
   })
 })
-
 
 
 // router.get("/img1",function(req,res){

@@ -41,18 +41,19 @@ userSchema.methods.checkPassword = function(guess,done){
   });
 };
 
-userSchema.methods.plusmoney = function(m){
+userSchema.methods.plusMoney = function(m){
   this.money = this.money + m;
   return this.save()
 }
 
-userSchema.methods.minusmoney = function(m){
+userSchema.methods.minusMoney = function(m){
   this.money = this.money - m;
   return this.save();
 }
 
-userSchema.methods.addFinance = function(company_name,amount){
+userSchema.methods.buyFinance = function(m,company_name,amount){
   const f = this.finances;
+  this.money = this.money - m;
   for (let i = 0; i<f.length ;i++){
     if(f[i]["company_name"]==company_name){
       this.finances[i]["amount"] = f[i]["amount"] + amount
