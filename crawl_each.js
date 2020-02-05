@@ -125,12 +125,12 @@ const parsing = async() => {
     return finance;
 }
 
-cron.schedule('* * * * *', () =>  {
-    parsing().then((f)=>{
+cron.schedule('0 */1 9-15 * * *', () =>  {
+    parsing().then( async (f)=>{
         console.log("real")
         console.log(f)
         for(let i = 0; i<f.length ; i++){
-            Finance.findOne({company_name:company_name[i]},function(err,finance){
+            await Finance.findOne({company_name:company_name[i]},function(err,finance){
                 console.log("저장중")
                 if(err){
                     return err;
@@ -138,6 +138,7 @@ cron.schedule('* * * * *', () =>  {
                 console.log(finance)
                 if(finance){
                     finance.stackFinance(f[i]);
+                    
                 }
                 else{
                     newfinance = new Finance (f[i]);
@@ -145,8 +146,20 @@ cron.schedule('* * * * *', () =>  {
                 }
             })
         }
+        console.log("완료")
     })
 });
 
-
+cron.schedule('0 0 16 * * *',()=>{
+    for(let i = 0; i<company_name.length;i++){
+        Finance.findOne({company_name:company_name[i]},function(err,finance){
+            if(err){
+                return err;
+            }
+            if(finance){
+                finance.savePrice()
+            }  
+        })
+    }
+})
 

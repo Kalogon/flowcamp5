@@ -55,10 +55,10 @@ financeSchema.methods.stackFinance = function (finance){
     return this.save();
 }
 
-financeSchema.methods.saveprice = function () {
-    let price_day = this.price_day;
-    this.price_all.push(price_day);
-    this.price_day = [];
+financeSchema.methods.savePrice = function () {
+    let market_price = this.market_price;
+    this.market_price_all.push(market_price);
+    this.market_price = [];
     return this.save();
 };
 
