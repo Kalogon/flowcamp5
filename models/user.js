@@ -62,6 +62,17 @@ userSchema.methods.buyFinance = function(m,company_name,amount){
   return this.save();
 }
 
+userSchema.methods.sellFinance = function(m,company_name,amount){
+  const f = this.finances;
+  this.money = this.money + m;
+  for (let i = 0; i<f.length ;i++){
+    if(f[i]["company_name"]==company_name){
+      this.finances[i]["amount"] = f[i]["amount"] - amount
+    }
+  }
+  return this.save();
+}
+
 
 
 var User = mongoose.model("User",userSchema);

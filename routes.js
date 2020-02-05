@@ -221,6 +221,23 @@ router.get("/buy",function(req,res){
   })
 })
 
+router.get("/sell",function(req,res){
+  Finance.findOne({company_name:req.body.company_name},function(err,finance){
+    const arr = finance["market_price"]
+    const temp = arr[arr.length-1].replace(",","")
+    // console.log(temp)
+    // console.log(Number(temp))
+    // console.log(Number(req.body.amount))
+    const money = Number(temp)*Number(req.body.amount);
+    // console.log(money)
+    // console.log(typeof(money))
+    User.findOne({username:req.body.username},function(err,user){
+      // console.log(user)
+      user.sellFinance(money, req.body.company_name,req.body.amount);
+    })
+    res.json();
+  })
+})
 router.get("/profile",function(req,res){
   User.findOne({username:req.body.username},function(err,user){
     const u = {user:user}
