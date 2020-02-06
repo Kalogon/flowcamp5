@@ -56,7 +56,12 @@ userSchema.methods.buyFinance = function(m,company_name,amount){
   this.money = this.money - m;
   for (let i = 0; i<f.length ;i++){
     if(f[i]["company_name"]==company_name){
-      this.finances[i]["amount"] = f[i]["amount"] + amount
+      console.log("buy");
+      console.log(f[i]["amount"])
+      console.log(amount)
+      this.finances[i]["amount"] = f[i]["amount"] + Number(amount)
+      console.log(this.finances[i]["amount"])
+      break;
     }
   }
   return this.save();
@@ -67,7 +72,8 @@ userSchema.methods.sellFinance = function(m,company_name,amount){
   this.money = this.money + m;
   for (let i = 0; i<f.length ;i++){
     if(f[i]["company_name"]==company_name){
-      this.finances[i]["amount"] = f[i]["amount"] - amount
+      this.finances[i]["amount"] = f[i]["amount"] - Number(amount)
+      break;
     }
   }
   return this.save();
