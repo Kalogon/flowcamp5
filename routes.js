@@ -203,12 +203,12 @@ router.get("/finance",ensureAuthenticated,function(req,res){
   })
 })
 
-router.get("/buy",function(req,res){
+router.get("/buy",ensureAuthenticated,function(req,res){
   let d = new Date();
   let hour = d.getHours()
   let minute = d.getMinutes()
 
-  if((hour>8)&&((hour<14)&&(minute<30))){
+  if((hour>8)&&((hour<16)&&(minute<30))){
     Finance.findOne({company_name:req.body.company_name},function(err,finance){
       const arr = finance["market_price"]
       const temp = arr[arr.length-1].replace(",","")
@@ -230,11 +230,11 @@ router.get("/buy",function(req,res){
   }
 })
 
-router.get("/sell",function(req,res){
+router.get("/sell",ensureAuthenticated,function(req,res){
   let d = new Date();
   let hour = d.getHours()
   let minute = d.getMinutes()
-  if((hour>8)&&((hour<14)&&(minute<30))){
+  if((hour>8)&&((hour<16)&&(minute<30))){
     Finance.findOne({company_name:req.body.company_name},function(err,finance){
       const arr = finance["market_price"]
       const temp = arr[arr.length-1].replace(",","")
@@ -255,7 +255,7 @@ router.get("/sell",function(req,res){
     res.json({code:"fail"});
   }
 })
-router.get("/profile",function(req,res){
+router.get("/profile",ensureAuthenticated,function(req,res){
   User.findOne({username:req.body.username},function(err,user){
     const u = {user:user}
     res.json(u);
