@@ -125,7 +125,10 @@ const parsing = async() => {
     return finance;
 }
 
-cron.schedule('0 */1 9-15 * * *', () =>  {
+console.log("crawl");
+
+cron.schedule('0 */1 9-17 * * *', () =>  {
+    console.log("crawl-start")
     parsing().then( async (f)=>{
         console.log("real")
         console.log(f)
@@ -149,6 +152,9 @@ cron.schedule('0 */1 9-15 * * *', () =>  {
         console.log("완료")
     })
 });
+
+
+
 
 cron.schedule('0 0 16 * * *',()=>{
     for(let i = 0; i<company_name.length;i++){

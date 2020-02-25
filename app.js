@@ -1,36 +1,36 @@
 const express = require("express");
 const mongoose = require("mongoose");
 mongoose.Promise = global.Promise;
-const path = require("path");
 const bodyParser = require("body-parser");
-const cookieParser = require("cookie-parser");
-const session = require("express-session");
-const flash = require("connect-flash");
-const passport = require("passport");
-const route = require("./routes");
-const crawl = require("./crawl_each")
-const setUpPassport = require("./setuppassport");
+const morgan = require('morgan')
+const cors = require("cors");
+
+const config = require('./config')
+const port = process.env.PORT || 80
+const crawl = require("./crawl_each");
+
+
+mongoose.connect(config.mongodbUri);
+const db = mongoose.connection
+db.on('error', console.error)
+db.once('open', ()=>{
+    console.log('connected to mongodb server')
+})
+
 
 const app = express();
-mongoose.connect("mongodb://localhost:27017/finance",{useMongoClient: true});
-setUpPassport();
-app.set("views",path.join(__dirname,"views"));
-var publicDir = require('path').join(__dirname,'/photo');
-app.use(express.static(publicDir));
-
-
+app.use(cors({origin: "http://localhost:3000", credentials:true}));
+app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended:false}));
-app.use(cookieParser());
-app.use(session({
-  secret:"TKRvOIJs=HyqrvagQ#&!f!%V]Ww/4KiVs$s,<<MX",
-  resave:true,
-  saveUninitialized:true
-}));
+app.use(morgan('dev'))
+app.set('jwt-secret', config.secret)
 
-app.use(flash());
-app.use(passport.initialize());
-app.use(passport.session());
-app.use(route);
-app.listen(3000,function(){
-  console.log("Server running at port 3000");
+app.get('/', (req, res) => {
+  res.send('Hello JWT')
+})
+// configure api router
+app.use('/api', require('./routes/api'))
+
+app.listen(port,function(){
+  console.log(`Express is running on port ${port}`);
 });

@@ -1,45 +1,150 @@
-var mongoose = require("mongoose");
-var bcrypt = require("bcrypt-nodejs");
-//해시 알고리즘 적용 회수, 높을수록 보안은 높음 속도는 느려짐
-var SALT_FACTOR = 10;
-//몽구스 요청하고 필드 정의
-var userSchema = mongoose.Schema({
+const mongoose = require("mongoose");
+const crypto = require('crypto')
+const config = require('../config')
+
+const userSchema = mongoose.Schema({
   username: {type:String,required:true,unique:true},
   password: {type:String,required:true},
-  createdAt:{type:Date,default:Date.now},
-  money: {type:Number},
+  money: {type:Number, default:5000000},
+  admin: { type: Boolean, default: false },
   finances: [new mongoose.Schema({company_name:String,amount:Number})]
 });
  
 
 
-//모델에 간단한 메서드 추가
-userSchema.methods.name = function(){
-  return this.displayName||this.username;
-};
-//bcrypt를 위한 빈 함수
-var noop = function(){};
-//모델이 저장되기("save") 전(.pre)에 실행되는 함수
-userSchema.pre("save",function(done){
-  let user = this;
-  if(!user.isModified("password")){
-    return done();
-  }
-  bcrypt.genSalt(SALT_FACTOR,function(err,salt){
-    if(err){return done(err);}
-    bcrypt.hash(user.password,salt,noop,function(err,hashedPassword){
-      if(err){return done(err);}
-      user.password = hashedPassword;
-      done();
-    });
-  });
-});
-// 비밀번호 검사하는 함수
-userSchema.methods.checkPassword = function(guess,done){
-  bcrypt.compare(guess,this.password,function(err,isMatch){
-      done(err,isMatch);
-  });
-};
+userSchema.statics.create = function(username, password) {
+  const encrypted = crypto.createHmac('sha1', config.secret)
+                    .update(password)
+                    .digest('base64')
+
+  const user = new this({
+      username,
+      password: encrypted,
+      finances:[
+        { company_name:"삼성전자",
+          amount:0
+        },
+        { company_name:"카카오",
+          amount:0
+        },
+        { company_name:"HLB",
+          amount:0
+        },
+        { company_name:"삼성SDI",
+          amount:0
+        },
+        { company_name:"남선알미늄",
+          amount:0
+        },
+        { company_name:"SK하이닉스",
+          amount:0
+        },
+        { company_name:"셀트리온",
+          amount:0
+        },
+        { company_name:"제일바이오",
+          amount:0
+        },
+        { company_name:"네이버",
+          amount:0
+        },
+        { company_name:"체시스",
+          amount:0
+        },
+        { company_name:"LG화학",
+          amount:0
+        },
+        { company_name:"젬백스",
+          amount:0
+        },
+        { company_name:"LG디스플레이",
+          amount:0
+        },
+        { company_name:"SK텔레콤",
+          amount:0
+        },
+        { company_name:"셀리버리",
+          amount:0
+        },
+        { company_name:"신라젠",
+          amount:0
+        },
+        { company_name:"알테오젠",
+          amount:0
+        },
+        { company_name:"진바이오텍",
+          amount:0
+        },
+        { company_name:"LG전자",
+          amount:0
+        },
+        { company_name:"엘비세미콘",
+          amount:0
+        },
+        { company_name:"파워로직스",
+          amount:0
+        },
+        { company_name:"NC소프트",
+          amount:0
+        },
+        { company_name:"KT&G",
+          amount:0
+        },
+        { company_name:"삼성전기",
+          amount:0
+        },
+        { company_name:"PSK",
+          amount:0
+        },  
+        { company_name:"드림텍",
+          amount:0
+        },
+        { company_name:"테스나",
+          amount:0
+        },
+        { company_name:"엠씨넥스",
+          amount:0
+        },
+        { company_name:"이크레더블",
+          amount:0
+        },
+        { company_name:"켐트로닉스",
+          amount:0
+        }
+      ]
+  })
+
+  // return the Promise
+  return user.save()
+}
+
+
+// find one user by using username
+userSchema.statics.findOneByUsername = function(username) {
+  return this.findOne({
+      username
+  }).exec()
+}
+
+// verify the password of the User documment
+userSchema.methods.verify = function(password) {
+  const encrypted = crypto.createHmac('sha1', config.secret)
+                    .update(password)
+                    .digest('base64')
+  console.log(this.password === encrypted)
+
+  return this.password === encrypted
+}
+
+userSchema.methods.assignAdmin = function() {
+  this.admin = true
+  return this.save()
+}
+
+
+
+
+
 
 userSchema.methods.plusMoney = function(m){
   this.money = this.money + m;

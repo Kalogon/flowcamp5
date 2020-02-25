@@ -13,30 +13,51 @@ router.use(function(req,res,next){
 });
 
 router.get("/",function(req,res){
-  if(req.isAuthenticated()){
-    console.log("logined")
-    res.sendFile(__dirname+"/views/index.html");
-    // res.render("index",{user:req.user});
+  var user_info = null;
+  console.log(req.user)
+  if(!req.user){
+      console.log("nologined")
+      user_info = [];
   }else{
-    console.log("nologin")
-    User.find().sort({createAt:"descending"})
-    .exec(function(err,users){
-      if(err){return next(err);}
-      res.sendFile(__dirname+"/views/index_nologin.html");
-      // res.render("index_nologin",{users:users});
-    });
+      console.log("logined")
+      user_info = JSON.parse(JSON.stringify(req.user));
   }
+  res.json(user_info);
+  // if(req.isAuthenticated()){
+  //   console.log("logined")
+  //   res.header("Access-Control-Allow-Origin", "*");
+  //   res.json({logincode:"OK"});
+  //   // res.render("index",{user:req.user});
+  // }else{
+  //   console.log("nologin")
+  //   res.header("Access-Control-Allow-Origin", "*");
+  //   res.json({logincode:"NO"});
+  //   // User.find().sort({createAt:"descending"})
+  //   // .exec(function(err,users){
+  //   //   if(err){return next(err);}
+  //   //   res.sendFile(__dirname+"/views/index_nologin.html");
+  //   //   // res.render("index_nologin",{users:users});
+  //   // });
+  // }
 });
 
 
 router.get("/signup",function(req,res){
   console.log("signup page")
-  res.sendFile(__dirname+"/views/signup.html");
+  if(req.isAuthenticated()){
+    res.header("Access-Control-Allow-Origin", "*");
+    res.json({logincode:"OK"});
+  }
+  else{
+    res.header("Access-Control-Allow-Origin", "*");
+    res.json({logincode:"NO"});
+  }
 });
 
 
 router.post("/signup",function(req,res,next){
   console.log("signup req")
+  console.log(req.body);
   var username = req.body.username;
   var password = req.body.password;
   console.log(username)
@@ -44,6 +65,7 @@ router.post("/signup",function(req,res,next){
   User.findOne({username:username},function(err,user){
     if(err){return next(err);}
     if(user){
+      console.log("사용자 이미 존재");
       req.flash("error","사용자가 이미 있습니다.");
       return res.redirect("/signup");
     }
@@ -164,15 +186,46 @@ router.get("/users/:username",function(req,res,next){
 
 router.get("/login",function(req,res){
   console.log("login page")
-  res.sendFile(__dirname+"/views/login.html");
+  if(req.isAuthenticated()){
+    res.header("Access-Control-Allow-Origin", "*");
+    res.json({logincode:"OK"});
+  }
+  else{
+    res.header("Access-Control-Allow-Origin", "*");
+    res.json({logincode:"NO"});
+  }
 });
 
 
-router.post("/login",passport.authenticate("login",{
-  successRedirect: "/",
-  failureRedirect: "/login",
-  failureFlash : true
-}));
+router.post("/login",function(req, res, next) {
+  passport.authenticate('login', function(err, user, info) {
+    if (err) { return next(err); }
+    
+    if(user){ // 로그인 성공
+      console.log("req.user : "+ JSON.stringify(user));
+      var json = JSON.parse(JSON.stringify(user));
+      
+      // customCallback 사용시 req.logIn()메서드 필수
+      req.logIn(user, function(err) {
+          if (err) { return next(err); }
+          return res.send(json);
+        });
+
+    }else{	// 로그인 실패
+      console.log("/login fail!!!");
+      res.send([]);
+    }
+  })(req, res, next);
+})
+
+// passport.authenticate("login",{
+//   successRedirect: "/",
+//   failureRedirect: "/login",
+//   failureFlash : true
+// }),
+// function(req, res) {	// 콜백함수
+//   console.log("req.user : "+ JSON.stringify(req.user));
+// });
 
 
 router.get("/logout",function(req,res){
@@ -189,9 +242,10 @@ function ensureAuthenticated(req,res,next){
   }
 }
 
-router.get("/finances",ensureAuthenticated,function(req,res){
+router.get("/finances",function(req,res){
   Finance.find({},function(err,finances){
     const f = {finances:finances};
+    res.header("Access-Control-Allow-Origin", "*");
     res.json(f);
   })
 })
@@ -255,8 +309,10 @@ router.get("/sell",ensureAuthenticated,function(req,res){
     res.json({code:"fail"});
   }
 })
-router.get("/profile",ensureAuthenticated,function(req,res){
+router.get("/profile",function(req,res){
+  console.log("profile-routes")
   User.findOne({username:req.body.username},function(err,user){
+    res.header("Access-Control-Allow-Origin", "*");
     const u = {user:user}
     res.json(u);
   })
