@@ -7,7 +7,7 @@ const cors = require("cors");
 
 const config = require('./config')
 const port = process.env.PORT || 80
-const crawl = require("./crawl_each");
+// const crawl = require("./crawl_each");
 
 
 mongoose.connect(config.mongodbUri);

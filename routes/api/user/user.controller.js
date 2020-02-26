@@ -1,5 +1,5 @@
 const User = require('../../../models/user')
-
+const Finance = require('../../../models/finance')
 /* 
     GET /api/user/list
 */
@@ -46,4 +46,22 @@ exports.assignAdmin = (req, res) => {
     ).catch(
         (err) => { res.status(404).json({message: err.message})}
     )
+}
+
+exports.showProfile = (req,res) => {
+    console.log("profile-routes")
+    User.findOne({username:req.body.username},function(err,user){
+        res.header("Access-Control-Allow-Origin", "*");
+        const u = {user:user}
+        res.json(u);
+    })
+}
+
+exports.showFinances = (req,res)=>{
+    console.log("finances-routes")
+    Finance.find({},function(err,finances){
+        const f = {finances:finances};
+        res.header("Access-Control-Allow-Origin", "*");
+        res.json(f);
+    })
 }

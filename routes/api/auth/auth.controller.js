@@ -96,11 +96,14 @@ exports.login = (req, res) => {
                             issuer: 'velopert.com',
                             subject: 'userInfo'
                         }, (err, token) => {
-                            if (err) reject(err)
-                            resolve(token) 
+                            if (err) {
+                                console.log(err.message)
+                                reject(err)
+                            }
+                            resolve([token,user]) 
                         })
                 })
-                return p
+                return p;
             } else {
                 throw new Error('login failed')
             }
@@ -108,15 +111,18 @@ exports.login = (req, res) => {
     }
 
     // respond the token 
-    const respond = (token) => {
+    const respond = (data) => {
+        console.log(data)
         res.json({
             message: 'logged in successfully',
-            token
+            token: data[0],
+            user: data[1]
         })
     }
 
     // error occured
     const onError = (error) => {
+        console.log(error.message)
         res.status(403).json({
             message: error.message
         })
