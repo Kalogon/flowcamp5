@@ -65,3 +65,59 @@ exports.showFinances = (req,res)=>{
         res.json(f);
     })
 }
+
+exports.buy = (req,res)=>{
+    console.log("buy-routes")
+
+    let d = new Date();
+    let hour = d.getHours()
+    let minute = d.getMinutes()
+    if(true){
+        Finance.findOne({company_name:req.body.company_name},function(err,finance){
+            const arr = finance["market_price"]
+            const temp = arr[arr.length-1].replace(",","")
+            // console.log(temp)
+            // console.log(Number(temp))
+            // console.log(Number(req.body.amount))
+            const money = Number(temp)*Number(req.body.amount);
+            // console.log(money)
+            // console.log(typeof(money))
+            User.findOne({username:req.body.username},function(err,user){
+            // console.log(user)
+            user.buyFinance(money, req.body.company_name,req.body.amount);
+            })
+            res.json({code:"success"});
+        })
+    }
+    else{
+    res.json({code:"fail"});
+    }
+}
+
+exports.sell = (req,res)=>{
+    console.log("sell-routes")
+
+    let d = new Date();
+    let hour = d.getHours()
+    let minute = d.getMinutes()
+    if(true){
+    Finance.findOne({company_name:req.body.company_name},function(err,finance){
+        const arr = finance["market_price"]
+        const temp = arr[arr.length-1].replace(",","")
+        // console.log(temp)
+        // console.log(Number(temp))
+        // console.log(Number(req.body.amount))
+        const money = Number(temp)*Number(req.body.amount);
+        // console.log(money)
+        // console.log(typeof(money))
+        User.findOne({username:req.body.username},function(err,user){
+        // console.log(user)
+        user.sellFinance(money, req.body.company_name,req.body.amount);
+        })
+        res.json({code:"success"});
+    })
+    }
+    else{
+    res.json({code:"fail"});
+    }
+}
