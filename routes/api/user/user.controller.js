@@ -121,3 +121,42 @@ exports.sell = (req,res)=>{
     res.json({code:"fail"});
     }
 }
+
+exports.own = (req,res)=>{
+    console.log("own-routes")
+
+    
+    const output = new Array();
+
+    userdone = async()=>{
+        const userfinances = new Array();
+
+        await User.findOne({username:req.body.username},function(err,user){
+            const temp = user["finances"]
+            for(let i = 0; i<temp.length;i++){
+                if(temp[i]["amount"]!=0){
+                    userfinances.push(temp[i]["company_name"])
+                }
+            }
+            console.log("userdone")
+        })
+
+        return userfinances;
+    }
+
+    userdone().then((uf)=>{
+        Finance.find({},function(err,finances){
+            console.log(uf)
+            finances.filter((finance)=>{
+                console.log(finance["company_name"])
+                if(uf.includes(finance["company_name"][0])){
+                    console.log("다행")
+                    output.push(finance)
+                }
+            })
+            console.log("financedone")
+            res.json({output:output})
+        })
+    })
+    
+}
