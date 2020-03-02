@@ -83,10 +83,19 @@ exports.buy = (req,res)=>{
             // console.log(money)
             // console.log(typeof(money))
             User.findOne({username:req.body.username},function(err,user){
-            // console.log(user)
-            user.buyFinance(money, req.body.company_name,req.body.amount);
+                // console.log(user)
+                if(err){
+                    res.json({code:"fail"});
+                }
+                if(money>user.money){
+                    res.json({code:"fail"});
+                }
+                else{
+                    user.buyFinance(money, req.body.company_name,req.body.amount);
+                    res.json({code:"success"});
+                }
             })
-            res.json({code:"success"});
+            
         })
     }
     else{
@@ -112,9 +121,21 @@ exports.sell = (req,res)=>{
         // console.log(typeof(money))
         User.findOne({username:req.body.username},function(err,user){
         // console.log(user)
-        user.sellFinance(money, req.body.company_name,req.body.amount);
+            const uf = user.finances
+            for(let i=0 ; i<uf.length ; i++){
+                if(uf[i]["company_name"] === req.body.company_name){
+                    if(uf[i]["amount"] < req.body.amount){
+                        res.json({code:"fail"});
+                        break;
+                    }
+                    else{
+                        user.sellFinance(money, req.body.company_name,req.body.amount);
+                        res.json({code:"success"});
+                        break;
+                    }
+                }
+            }
         })
-        res.json({code:"success"});
     })
     }
     else{
