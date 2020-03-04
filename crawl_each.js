@@ -3,6 +3,8 @@ const cheerio = require("cheerio");
 const express = require("express");
 const mongoose = require("mongoose");
 const cron = require("node-cron");
+const schedule = require('node-schedule');
+const CronJob = require('cron').CronJob;
 const Finance = require("./models/finance");
 mongoose.Promise = global.Promise;
 
@@ -88,15 +90,11 @@ const parsing = async() => {
                     })
                 }
             });
-
-            temp.push($("#_nowVal").text());
-            temp.push($("#_quant").text());
-            temp.push($("#_amount").text());
             let finance_json = new Object();
             finance_json.company_name = company_name[j];
 
-            finance_json.market_price = temp[23];
-            finance_json.trade_volume = temp[24];
+            finance_json.market_price = $("#_nowVal").text();
+            finance_json.trade_volume = $("#_quant").text();
             finance_json.market_cap_rank = temp[1];
             finance_json.listed_stocks = temp[2];
             finance_json.face_value = temp[3];
@@ -110,14 +108,11 @@ const parsing = async() => {
             finance_json.worst = temp[11];
             finance_json.per_fn = temp[12];
             finance_json.eps_fn = temp[13];
-            finance_json.per_krx = temp[14];
-            finance_json.eps_krx = temp[15];
-            finance_json.per_expect = temp[16];
-            finance_json.eps_expect = temp[17];
-            finance_json.pbr = temp[18];
-            finance_json.bps = temp[19];
-            finance_json.dividend_yield = temp[20];
-            finance_json.same_industry_per = temp[21];
+            finance_json.per_expect = temp[14];
+            finance_json.eps_expect = temp[15];
+            finance_json.bps = temp[17];
+            finance_json.dividend_yield = temp[18];
+            finance_json.same_industry_per = temp[19];
             
             finance.push(finance_json);
         });
@@ -127,7 +122,7 @@ const parsing = async() => {
 
 console.log("crawl");
 
-cron.schedule('0 */1 9-17 * * *', () =>  {
+const job = new CronJob('0 */5 9-15 * * *', function() {
     console.log("crawl-start")
     parsing().then( async (f)=>{
         console.log("real")
@@ -151,12 +146,8 @@ cron.schedule('0 */1 9-17 * * *', () =>  {
         }
         console.log("완료")
     })
-});
-
-
-
-
-cron.schedule('0 0 16 * * *',()=>{
+}, 
+()=>{
     for(let i = 0; i<company_name.length;i++){
         Finance.findOne({company_name:company_name[i]},function(err,finance){
             if(err){
@@ -167,5 +158,9 @@ cron.schedule('0 0 16 * * *',()=>{
             }  
         })
     }
-})
+}
+, true, 'Asia/Seoul');
+
+job.start();
+
 

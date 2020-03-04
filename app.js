@@ -4,7 +4,7 @@ mongoose.Promise = global.Promise;
 const bodyParser = require("body-parser");
 const morgan = require('morgan')
 const cors = require("cors");
-
+const crawl = require("./crawl_each")
 const config = require('./config')
 const port = process.env.PORT || 80
 // const crawl = require("./crawl_each");

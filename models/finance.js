@@ -18,11 +18,8 @@ var financeSchema = mongoose.Schema({
     worst: [String],
     per_fn: [String],
     eps_fn: [String],
-    per_krx: [String],
-    eps_krx: [String],
     per_expect: [String],
     eps_expect: [String],
-    pbr: [String],
     bps: [String],
     dividend_yield: [String],
     same_industry_per: [String]
@@ -44,11 +41,8 @@ financeSchema.methods.stackFinance = function (finance){
     this.worst.push(finance["worst"])
     this.per_fn.push(finance["per_fn"])
     this.eps_fn.push(finance["eps_fn"])
-    this.per_krx.push(finance["per_krx"])
-    this.eps_krx.push(finance["eps_krx"])
     this.per_expect.push(finance["per_expect"])
     this.eps_expect.push(finance["eps_expect"])
-    this.pbr.push(finance["pbr"])
     this.bps.push(finance["bps"])
     this.dividend_yield.push(finance["dividend_yield"])
     this.same_industry_per.push(finance["same_industry_per"])
