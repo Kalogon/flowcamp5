@@ -1,7 +1,7 @@
 var mongoose = require("mongoose");
 
 var financeSchema = mongoose.Schema({
-    company_name: [String],
+    company_name: String,
     market_price: [String],
     market_price_all: [[String]],
     trade_volume: [String],
@@ -50,9 +50,11 @@ financeSchema.methods.stackFinance = function (finance){
 }
 
 financeSchema.methods.savePrice = function () {
+    console.log("일단")
     let market_price = this.market_price;
     this.market_price_all.push(market_price);
-    this.market_price = [];
+    let final = market_price[market_price.length-1]
+    this.market_price = [final];
     return this.save();
 };
 

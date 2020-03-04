@@ -74,6 +74,7 @@ exports.buy = (req,res)=>{
     let minute = d.getMinutes()
     if(true){
         Finance.findOne({company_name:req.body.company_name},function(err,finance){
+            console.log(finance)
             const arr = finance["market_price"]
             const temp = arr[arr.length-1].replace(",","")
             // console.log(temp)
@@ -170,7 +171,7 @@ exports.own = (req,res)=>{
             console.log(uf)
             finances.filter((finance)=>{
                 console.log(finance["company_name"])
-                if(uf.includes(finance["company_name"][0])){
+                if(uf.includes(finance["company_name"])){
                     console.log("다행")
                     output.push(finance)
                 }
