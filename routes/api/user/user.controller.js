@@ -73,31 +73,37 @@ exports.buy = (req,res)=>{
     let hour = d.getHours()
     let minute = d.getMinutes()
     if(true){
-        Finance.findOne({company_name:req.body.company_name},function(err,finance){
-            console.log(finance)
-            const arr = finance["market_price"]
-            const temp = arr[arr.length-1].replace(",","")
-            // console.log(temp)
-            // console.log(Number(temp))
-            // console.log(Number(req.body.amount))
-            const money = Number(temp)*Number(req.body.amount);
-            // console.log(money)
-            // console.log(typeof(money))
-            User.findOne({username:req.body.username},function(err,user){
-                // console.log(user)
-                if(err){
-                    res.json({code:"fail"});
-                }
-                if(money>user.money){
-                    res.json({code:"fail"});
-                }
-                else{
-                    user.buyFinance(money, req.body.company_name,req.body.amount);
-                    res.json({code:"success"});
-                }
+        if(req.body.amount<0){
+            res.json({code:"fail"});
+        }
+        else{
+            Finance.findOne({company_name:req.body.company_name},function(err,finance){
+                console.log(finance)
+                const arr = finance["market_price"]
+                const temp = arr[arr.length-1].replace(",","")
+                // console.log(temp)
+                // console.log(Number(temp))
+                // console.log(Number(req.body.amount))
+                const money = Number(temp)*Number(req.body.amount);
+                // console.log(money)
+                // console.log(typeof(money))
+                User.findOne({username:req.body.username},function(err,user){
+                    // console.log(user)
+                    if(err){
+                        res.json({code:"fail"});
+                    }
+                    if(money>user.money){
+                        res.json({code:"fail"});
+                    }
+                    else{
+                        user.buyFinance(money, req.body.company_name,req.body.amount);
+                        res.json({code:"success"});
+                    }
+                })
+                
             })
-            
-        })
+        }
+        
     }
     else{
     res.json({code:"fail"});
@@ -111,33 +117,39 @@ exports.sell = (req,res)=>{
     let hour = d.getHours()
     let minute = d.getMinutes()
     if(true){
-    Finance.findOne({company_name:req.body.company_name},function(err,finance){
-        const arr = finance["market_price"]
-        const temp = arr[arr.length-1].replace(",","")
-        // console.log(temp)
-        // console.log(Number(temp))
-        // console.log(Number(req.body.amount))
-        const money = Number(temp)*Number(req.body.amount);
-        // console.log(money)
-        // console.log(typeof(money))
-        User.findOne({username:req.body.username},function(err,user){
-        // console.log(user)
-            const uf = user.finances
-            for(let i=0 ; i<uf.length ; i++){
-                if(uf[i]["company_name"] === req.body.company_name){
-                    if(uf[i]["amount"] < req.body.amount){
-                        res.json({code:"fail"});
-                        break;
+        if(req.body.amount<0){
+            res.json({code:"fail"});
+        }
+        else{
+            Finance.findOne({company_name:req.body.company_name},function(err,finance){
+                const arr = finance["market_price"]
+                const temp = arr[arr.length-1].replace(",","")
+                // console.log(temp)
+                // console.log(Number(temp))
+                // console.log(Number(req.body.amount))
+                const money = Number(temp)*Number(req.body.amount);
+                // console.log(money)
+                // console.log(typeof(money))
+                User.findOne({username:req.body.username},function(err,user){
+                // console.log(user)
+                    const uf = user.finances
+                    for(let i=0 ; i<uf.length ; i++){
+                        if(uf[i]["company_name"] === req.body.company_name){
+                            if(uf[i]["amount"] < req.body.amount){
+                                res.json({code:"fail"});
+                                break;
+                            }
+                            else{
+                                user.sellFinance(money, req.body.company_name,req.body.amount);
+                                res.json({code:"success"});
+                                break;
+                            }
+                        }
                     }
-                    else{
-                        user.sellFinance(money, req.body.company_name,req.body.amount);
-                        res.json({code:"success"});
-                        break;
-                    }
-                }
-            }
-        })
-    })
+                })
+            })
+        }
+        
     }
     else{
     res.json({code:"fail"});

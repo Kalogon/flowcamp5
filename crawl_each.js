@@ -122,7 +122,7 @@ const parsing = async() => {
 
 console.log("crawl");
 
-const job = new CronJob('0 */10 9-15 * * *', function() {
+const job = new CronJob('0 */5 9-23 * * *', function() {
     console.log("crawl-start")
     parsing().then( async (f)=>{
         console.log("real")
@@ -152,7 +152,7 @@ null
 
 job.start();
 
-const temp = new CronJob('00 30 15 * * *', ()=>{
+const temp = new CronJob('00 55 08 * * *', ()=>{
     console.log("시작")
     for(let i = 0; i<company_name.length;i++){
         Finance.findOne({company_name:company_name[i]},function(err,finance){
@@ -164,6 +164,8 @@ const temp = new CronJob('00 30 15 * * *', ()=>{
             }  
         })
     }
-})
+},
+null
+, true, 'Asia/Seoul')
 
 temp.start();
